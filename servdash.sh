@@ -1,9 +1,9 @@
 #!/bin/bash
-#SETUP PARAMS
+# Servdash.io Params------------------------------
 akey=1
 skey=2
 
-#SCRIPT:
+# Script------------------------------------------
 echo "$*" | grep "\-d" 2>&1 > /dev/null
 debug=$?
 
@@ -26,7 +26,7 @@ servdash_cpu_load(){
     echo "CPU Load (%usr): " $cpuload
 }
 servdash_disk_usage(){
-    du=$(df | grep $1'$' | awk '{print $8}' | sed s/%//)
+    du=$(df -P | grep $1'$' | tail -1 | awk '{print $5}' | sed s/%//)
     echo $1" disk usage (%):" $du
 }
 servdash_memory_load
