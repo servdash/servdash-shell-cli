@@ -22,7 +22,7 @@ servdash_memory_load(){
     echo "Memory use (mb): " $memload
 }
 servdash_cpu_load(){
-    cpuload=$(sar 1 2 | tail -1 | awk '{print $2}')
+    cpuload=$(top -b -n 2 -d 0.1 | grep "^Cpu" | tail -1 | awk '{print $2}' | sed s/%us,//)
     echo "CPU Load (%usr): " $cpuload
 }
 servdash_disk_usage(){
