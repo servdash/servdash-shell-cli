@@ -1,8 +1,24 @@
 #!/bin/bash
+#SETUP PARAMS
 akey=1
 skey=2
+
+#SCRIPT:
+echo "$*" | grep "\-d" 2>&1 > /dev/null
+debug=$?
+
+sdashdbg(){
+    [ $debug -eq 0 ] && echo -e "\033[33mSERVDASH-DBG>>> "$1"\033[0m"
+}
 servdash_memory_load(){
-    memload=$(top -l 1 -n0 -s0 | awk '/PhysMem/ {print $8}' | sed 's/\([0-9]*\)M/\1/')
+    which free 2>&1 > /dev/null
+    if [ $? -eq 0 ]; then
+        sdashdbg ">> using free"
+        memload=$(free -m | grep Mem | awk '{print $3}')
+    else
+        sdashdbg ">> using top"
+        memload=$(top -l 1 -n0 -s0 | awk '/PhysMem/ {print $8}' | sed 's/\([0-9]*\)M/\1/')
+    fi
     echo "Memory use (mb): " $memload
 }
 servdash_cpu_load(){
