@@ -13,16 +13,20 @@ sdashdbg(){
 servdash_memory_load(){
     which free 2>&1 > /dev/null
     if [ $? -eq 0 ]; then
-        sdashdbg ">> using free"
+        sdashdbg "using free"
         memload=$(free -m | grep Mem | awk '{print $3}')
     else
-        sdashdbg ">> using top"
+        sdashdbg "using top"
         memload=$(top -l 1 -n0 -s0 | awk '/PhysMem/ {print $8}' | sed 's/\([0-9]*\)M/\1/')
     fi
     echo "Memory use (mb): " $memload
 }
 servdash_cpu_load(){
-    cpuload=$(top -b -n 2 -d 0.1 | grep "^Cpu" | tail -1 | awk '{print $2}' | sed s/%us,//)
+    cpuload=$(top -b -n 2 -d 0.1 2>&1 | grep "^Cpu" | tail -1 | awk '{print $2}' | sed s/%us,//)
+    if [ -z "$cpuload" ]; then
+        sdashdbg "top cpuload fallback"
+        cpuload=$(top -l 2 -n0 -s0  | grep "^CPU" | tail -1 | awk '{print $3}' | tr '%' '\0')
+    fi
     echo "CPU Load (%usr): " $cpuload
 }
 servdash_disk_usage(){
